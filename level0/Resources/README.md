@@ -3,7 +3,11 @@ Dans un premier temps ls -la ./level0
 fichier appartenant a level1, mais executable par le groupe users dont fait parti level0
 
 execution de ./level0
+
+```
+
 Segmentation fault (core dumped)
+```
 
 Pas d'arguments produit une segfault
 
@@ -63,8 +67,8 @@ disassemble main
    0x08048f78 <+184>:	mov    %eax,(%esp)
    0x08048f7b <+187>:	call   0x804a230 <fwrite>
    0x08048f80 <+192>:	mov    $0x0,%eax
-   0x08048f85 <+197>:	leave  
-   0x08048f86 <+198>:	ret   
+   0x08048f85 <+197>:	leave
+   0x08048f86 <+198>:	ret
 
 premiere fonction appellee = atoi, qui recupere l'argument pour le passer en integer
 
@@ -74,7 +78,7 @@ break atoi
 0xbffff912:	 "123"
 
 
-la fonction sort ici 
+la fonction sort ici
    0x08048ec0 <+0>:	push   %ebp
    0x08048ec1 <+1>:	mov    %esp,%ebp
    0x08048ec3 <+3>:	and    $0xfffffff0,%esp
@@ -122,19 +126,19 @@ la fonction sort ici
    0x08048f78 <+184>:	mov    %eax,(%esp)
    0x08048f7b <+187>:	call   0x804a230 <fwrite>
    0x08048f80 <+192>:	mov    $0x0,%eax
-   0x08048f85 <+197>:	leave  
-   0x08048f86 <+198>:	ret    
+   0x08048f85 <+197>:	leave
+   0x08048f86 <+198>:	ret
 
-qui fait un saut la ligne main+152 et quitte le processus ave No !
+qui fait un saut la ligne main+152 et quitte le processus avec No !
 
 Du coup c'est le cmp avant qui fail, et en examinant le chiffre hexadecimal de comparaison est 423.
 
 Du coup en Run 423 le programme continue et ouvre un shell (getegid, getuid, setregid, setresgid ==> change le user avec level1 et execve /bin/sh)
 
 level0@RainFall:~$ ./level0 423
-$ id    
+$ id
 uid=2030(level1) gid=2020(level0) groups=2030(level1),100(users),2020(level0)
 $ cat /home/user/level1/.pass
 1fe8a524fa4bec01ca4ea2a869af2a02260d4a7d5fe7e7c24d8617e6dca12d3a
- 
+
 on est bien level1, et on peux cat le .pass

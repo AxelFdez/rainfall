@@ -39,7 +39,7 @@ Ligne 6, une allocation de 80 octets (0x50) est demandée.
 
 Comme la fonction gets ne fait aucunes vérifications de tailles de chaines de caracteres, nous concluons qu'une faille par buffer overflow est possible.
 
-La technique utilisée est de d'inclure dans le buffer un shellcode qui ouvre un shell, et comme le programme execute avec les droits du level2, nous seront dans un shell avec l'id de celui-ci.
+La technique utilisée est d'inclure dans le buffer un shellcode qui ouvre un shell, et comme le programme execute avec les droits du level2, nous seront dans un shell avec l'id de celui-ci.
 
 ### Fonctionnement de la faille
 
@@ -48,7 +48,7 @@ La technique utilisée est de d'inclure dans le buffer un shellcode qui ouvre un
 
 ### Les étapes :
 - Trouver l'adresse du buffer.
-- tester des longueur de buffer dans gdb pour vérifier l'écrasement du pointeur de retour.
+- tester des longueurs de buffer dans gdb pour vérifier l'écrasement du pointeur de retour.
 - Executer le binaire en redirigeant stdin pour pas que le programme termine.
 
 ```
@@ -113,7 +113,7 @@ Nous allons utiliser ce shellcode :
 "\xf0\xf6\xff\xbf" : adresse qui pointe vers le debut du buffer où les nop sled sont.
 
 
-75 est déterniné par les essais d'alignements de l'adresse de retour.
+75 est déterminé par les essais d'alignements de l'adresse de retour.
 30 est la taille des nop sled
 23 est la taille du shellcode dash
 

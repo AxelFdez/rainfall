@@ -4,8 +4,9 @@
 level2@RainFall:~$ ./level2
 coucou
 coucou
-````
-executable présent dans le repertoire qui ecris sur la sortie standart le prompt ouvert a l'execution. Passons le programme a gdb.
+```
+executable présent dans le repertoire qui ecris sur la sortie standard l'input entre. Passons le programme a gdb.
+
 ```
 Dump of assembler code for function main:
    0x0804853f <+0>:	push   %ebp
@@ -50,28 +51,9 @@ Dump of assembler code for function p:
 End of assembler dump.
 ```
 
-La fonction p declarée dans le main possède la logique.
+La fonction p utilisee dans le main possède la logique.
 On voit qu'il y a une fonction gets, non sécurisée car un tableau de 76 char est alloué.
 
-```
-void p(void)
-
-{
-  uint unaff_retaddr;
-  char local_50 [76];
-
-  fflush(stdout);
-  gets(local_50);
-  if ((unaff_retaddr & 0xb0000000) == 0xb0000000) {
-    printf("(%p)\n",unaff_retaddr);
-                    // WARNING: Subroutine does not return
-    _exit(1);
-  }
-  puts(local_50);
-  strdup(local_50);
-  return;
-}
-```
 
 L'étude du retro-ingieniering dans ghidra nous informe d'une condition apres le gets. Cette condition compare le bit de poids fort de l'adresse de retour de la fonction gets, si l'adresse commence par "0xb" le programme s'arrete.
 Nous ne pouvons donc pas reutiliser la methode utilisée au niveau inferieur car le buffer situé sur la stack aura son addresse qui commence par "0xb".
@@ -95,10 +77,10 @@ On constate que si on ne fais pas de buffer overflow, le programme passe au puts
 Nous voyons que le tableau est alloué sur le tas avec strdup.
 
 L'exploit va consister a faire executer notre shellcode sur le tas au lieu de la stack.
-Grace a un breakpoint apres strdup nous trouvons une addresse ou nous pourrons rediriger le shellcode.
+Grace a un breakpoint apres strdup nous trouvons une adresse ou nous pourrons rediriger le shellcode.
 
 ```
-(gdb) x/100x $eax-100
+(gdb) x/100x $eax-100 <== eax designe l'adresse sur le tas
 0x8049fa4:	0x00000000	0x00000000	0x00000000	0x00000000
 0x8049fb4:	0x00000000	0x00000000	0x00000000	0x00000000
 0x8049fc4:	0x00000000	0x00000000	0x00000000	0x00000000
@@ -106,7 +88,7 @@ Grace a un breakpoint apres strdup nous trouvons une addresse ou nous pourrons r
 0x8049fe4:	0x00000000	0x00000000	0x00000000	0x00000000
 0x8049ff4:	0x00000000	0x00000000	0x00000000	0x00000000
 0x804a004:	0x00000051	0x41414141	0x41414141	0x41414141
-0x804a014:	0x41414141	0x41414141	0x41414141	0x41414141
+0x804a014:	0x41414141	0x41414141	0x41414141	0x41414141 <== adresse utilisee
 ```
 
 ```

