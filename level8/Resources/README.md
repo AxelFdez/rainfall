@@ -1,47 +1,24 @@
 # Level8
 
-Voici le code de l'executable decompile avec Hex-Rays
-```
-int __cdecl main(int argc, const char **argv, const char **envp)
-{
-  char s[5]; // [esp+20h] [ebp-88h] BYREF
-  char v5[2]; // [esp+25h] [ebp-83h] BYREF
-  char v6[129]; // [esp+27h] [ebp-81h] BYREF
-
-  while ( 1 )
-  {
-    printf("%p, %p \n", auth, (const void *)service);
-    if ( !fgets(s, 128, stdin) )
-      break;
-    if ( !memcmp(s, "auth ", 5u) )
-    {
-      auth = (char *)malloc(4u);
-      *(_DWORD *)auth = 0;
-      if ( strlen(v5) <= 0x1E )
-        strcpy(auth, v5);
-    }
-    if ( !memcmp(s, "reset", 5u) )
-      free(auth);
-    if ( !memcmp(s, "service", 6u) )
-      service = (int)strdup(v6);
-    if ( !memcmp(s, "login", 5u) )
-    {
-      if ( *((_DWORD *)auth + 8) )
-        system("/bin/sh");
-      else
-        fwrite("Password:\n", 1u, 0xAu, stdout);
-    }
-  }
-  return 0;
-}
-```
 On constate que le programme est une boucle qui change de comportement en fonction des entrees clavier.
-Le programme verifie que "auth " est entre pour initialise "*(_DWORD *)auth = 0;"
+Le programme verifie que "auth " est entre pour initialise "auth" a 0 a l'adresse "0x804a008"
 
-Quand nous entrons service une premiere fois nous ecrivons une adresse sur le tas a auth+4.
-Il suffit d'entrer une nouvelle fois service pour entrer une adresse a auth+8.
+Quand nous entrons "service" une premiere fois nous ecrivons une adresse sur le tas a auth+4 ("0x804a018").
+Il suffit d'entrer une nouvelle fois service pour entrer une adresse a auth+8 ("0x804a028").
 
-En entrans login nous passons donc dans la condition pour ouvrir lancer un bash.
+En entrans login nous passons donc dans la condition et comme auth[8] != 0 , un bash est lancé.
+
+```
+0x804a028:      0x00000000
+(gdb) c
+Continuing.
+service
+0x804a008, 0x804a028
+
+Breakpoint 1, 0x08048596 in main ()
+(gdb) x/x 0x804a028
+0x804a028:      0x0000000a <=== apres deuxieme "service"
+```
 
 ```
 level8@RainFall:~$ ./level8
