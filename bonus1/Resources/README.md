@@ -1,35 +1,11 @@
 # Bonus 1
 
-On commence par décompiler le programme.
-```
-undefined4 main(undefined4 param_1,int param_2)
-
-{
-  undefined4 uVar1;
-  undefined local_3c [40];
-  int local_14;
-
-  local_14 = atoi(*(char **)(param_2 + 4));
-  if (local_14 < 10) {
-    memcpy(local_3c,*(void **)(param_2 + 8),local_14 * 4);
-    if (local_14 == 0x574f4c46) {
-      execl("/bin/sh","sh",0);
-    }
-    uVar1 = 0;
-  }
-  else {
-    uVar1 = 1;
-  }
-  return uVar1;
-}
-```
-
 Ce que nous pouvons lire :
 
 - Le programme attend deux arguments.
-- Un atoi est là pour convertir l'argument en integer et on met le resultat dans une variable (local_14).
+- Un atoi est là pour convertir le 1er argument en integer et on met le resultat dans une variable (local_14).
 - S'il est strictement inférieur a 10 on entre danas la condition.
-- Nous mettons le deuxième argument dans une variable (local_3c) alouée 40 char sur la stack avec memcpy, en spécifiant une longueur totale de la valeur de atoi * 4 (donc 36 max.)
+- Nous mettons le deuxième argument dans une variable (buffer) alouée 40 char sur la stack avec memcpy, en spécifiant une longueur totale de la valeur de atoi * 4 (donc 36 max.)
 - Enfin, si la variable local_14 est égale à l'adresse "0x574f4c46", un shell est ouvert avec les droits supérieurs.
 
 Nous devons donc modifier la valeur de local_14 et pour se faire utiliser memcopy pour l'écraser.
