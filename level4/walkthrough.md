@@ -27,6 +27,8 @@ void main(void) {
 }
 ```
 
+# Explication
+
 Ici c’est quasiment la même chose, c’est un exploit du formatstring de printf, on doit faire en sorte
 que la condition soit vraie.
 
