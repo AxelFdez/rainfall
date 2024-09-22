@@ -33,6 +33,8 @@ Alors :
    Ou sinon on doit profiter du buffer overflow pour écrire sur la pile (ce qui est possible car le
    programme fait mov %eax,(%esp)).
 
+![Figure 1](./Resources/figure1.png)
+
 Code d'exemple, pour faire un overflow avec atoi et la multiplication par 4 : 
 
 Pour `run  $(python -c 'print "-" + str(2 ** 32 / 4)') a`
