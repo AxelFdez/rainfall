@@ -1,8 +1,8 @@
 Read also: [./Resources/README.md](./Resources/README.md)
 
-https://dogbolt.org/?id=2e8bb7ea-1f7b-4c7b-a01b-0ff9afb4fc75 
-
 # Source
+
+https://dogbolt.org/?id=2e8bb7ea-1f7b-4c7b-a01b-0ff9afb4fc75 
 
 ```c
 //----- (08048484) --------------------------------------------------------
