@@ -5,23 +5,19 @@
 
 int main(int argc, char *argv[]) {
 
-    int local_14 = atoi(argv[1]);
+    int var1 = atoi(argv[1]);
 	char buffer[40];
     int magicNumber = 0x574f4c46;  // "FLOW" in hex, assuming little-endian
     int result;
 
-    if (local_14 < 10) {
-
+    if (var1 < 10) {
         // Copying data into the buffer, interpreting argv[2] as an address to a memory block
-        memcpy(buffer, argv[2], (local_14 * sizeof(int)) * 4);
+        memcpy(buffer, argv[2], (var1 * sizeof(int)) * 4);
 
-        if (local_14 == magicNumber) {
+        if (var1 == magicNumber) {
             execl("/bin/sh", "sh", NULL);  // If the magic number condition is met, execute a shell
         }
-        result = 0;
-    } else {
-        result = 1;
+        return(0);
     }
-
-    return result;
+    return(1);
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
 
 int main(int argc, char *argv[]) {
     int num;
@@ -9,23 +10,18 @@ int main(int argc, char *argv[]) {
     gid_t egid;
     uid_t euid;
 
-    if (argc < 2) {
-        printf("Usage: %s <number>\n", argv[0]);
-        return 1;
-    }
-
     num = atoi(argv[1]);
 
     if (num == 423) {
-        str = strdup("/bin/sh");  // Placeholder for actual string at address 0x80c5348
+        str = strdup("/bin/sh");
         egid = getegid();
         euid = geteuid();
         setresgid(egid, egid, egid);
         setresuid(euid, euid, euid);
-        execv(str, argv + 1);  // Assuming the rest of argv is properly set up for execv
+        execv(str, argv + 1);
         free(str);
     } else {
-        const char *error_msg = "Error message";  // Placeholder for actual error message at address 0x80ee170
+        const char *error_msg = "No !";
         fwrite(error_msg, 1, strlen(error_msg), stderr);
     }
 

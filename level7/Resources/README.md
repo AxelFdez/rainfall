@@ -86,7 +86,7 @@ eax            0x804a038     <=== adresse du malloc de strcpy2    134520888
 
 ```
 
-Les deux buffer des array1[1] et array2[1] sont proche en memoire, en ecrivant a (buffer strcpy1) + 20, l'adresse de puts, on ecrase le buffer de copy du 2e strcpy par l'adresse du puts, et on y ecris l'adresse de la fonction m.
+Les deux buffer des array1[1] et array2[1] sont proche en memoire, en ecrivant a (buffer strcpy1) + 20, l'adresse de puts, on ecrase l'adresse du buffer de copy (array2) du 2e strcpy par l'adresse du puts, et on y ecris l'adresse de la fonction m.
 
 Lors de l'appel de puts, c'est maintenant la fonction m qui sera appelee.
 

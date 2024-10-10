@@ -35,7 +35,7 @@ End of assembler dump.
 ```
 
 Le programme demande une entrée utilisateur avec gets.
-Ligne 6, une allocation de 80 octets (0x50) est demandée.
+Ligne 6, une allocation de 80 octets (0x50) (alignement de 16 octets) est demandée donc un buffer de 76 + padding de 4.
 
 Comme la fonction gets ne fait aucunes vérifications de tailles de chaines de caracteres, nous concluons qu'une faille par buffer overflow est possible.
 

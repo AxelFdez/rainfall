@@ -14,7 +14,7 @@ Après leur création, la fonction setAnnotation est appelée sur le premier obj
 
 Cette méthode copie une chaîne de caractères dans l'objet, en commençant juste après le début de l'objet (à l'adresse this + 4). La longueur de la chaîne est déterminée par strlen, et il n'y a aucune vérification pour prévenir un dépassement de la taille allouée pour l'objet, ce qui représente une vulnérabilité de débordement de tampon.
 
-Ensuite, il y a un appel indirect de fonction via le deuxième objet this_00, qui semble utiliser un pointeur de fonction stocké dans ou avec l'objet.
+Enfin la methode publique operator+ de l'objet1 est appelee avec l'objet2, le retour du programme est donc 11.
 
 ## Detail de l'exploit
 

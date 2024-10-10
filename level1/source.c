@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 void run(void)
 {
@@ -9,8 +11,8 @@ void run(void)
 void main(void)
 
 {
-  char local_50 [76];
+  char buffer[76]; // 80 alloue + 4 padding (alignement)
 
-  gets(local_50);
+  gets(buffer);
   return;
 }

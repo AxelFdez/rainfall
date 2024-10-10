@@ -1,12 +1,12 @@
 # Level8
 
 On constate que le programme est une boucle qui change de comportement en fonction des entrees clavier.
-Le programme verifie que "auth " est entre pour initialise "auth" a 0 a l'adresse "0x804a008"
+Le programme verifie que "auth " est entre pour initialise "auth" alouer 4 octets et mettre auth[0] a 0 a l'adresse "0x804a008", puis copie input+5 dans auth (ici 0x0a equivalent a line feed)
 
-Quand nous entrons "service" une premiere fois nous ecrivons une adresse sur le tas a auth+4 ("0x804a018").
-Il suffit d'entrer une nouvelle fois service pour entrer une adresse a auth+8 ("0x804a028").
+Quand nous entrons "service" une premiere fois une adresse est allouee sur le tas, service se situe a auth[16] ("0x804a018") et une line feed y est inscrit (input + 7 = service_ <-).
+Il suffit d'entrer une nouvelle fois service pour allouee la meme chose a l'adresse a auth[32] ("0x804a028").
 
-En entrans login nous passons donc dans la condition et comme auth[8] != 0 , un bash est lancé.
+En entrant login nous passons donc dans la condition car auth[32] vaut "0x0a" et != 0 , un bash est lancé.
 
 ```
 0x804a028:      0x00000000

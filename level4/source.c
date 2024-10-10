@@ -1,15 +1,20 @@
-void p(char *param_1)
+#include <stdio.h>
+#include <stdlib.h>
+
+int m;
+
+void p(char *buffer)
 {
-  printf(param_1);
+  printf(buffer);
   return;
 }
 
 void n(void)
 {
-  char local_20c [520];
+  char buffer[520];
 
-  fgets(local_20c,0x200,1);
-  p(local_20c);
+  fgets(buffer,0x200,stdin);
+  p(buffer);
   if (m == 0x1025544) {
     system("/bin/cat /home/user/level5/.pass");
   }

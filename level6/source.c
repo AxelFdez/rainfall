@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 void n()
 {
   system("/bin/cat /home/user/level7/.pass");
@@ -5,7 +9,6 @@ void n()
 }
 
 void m()
-
 {
   puts("Nope");
   return;

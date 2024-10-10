@@ -33,7 +33,5 @@ int main(int argc, char* argv[]) {
 
     obj1->setAnnotation(argv[1]);
 
-    int result = (*obj2)(*obj1);
-
-    return 0;
+	return (obj1->operator+(*obj2));
 }

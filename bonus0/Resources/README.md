@@ -131,6 +131,7 @@ End of assembler dump.
 
 Nous pouvons à présent construire notre shellcode, comme suit :
 NopeSled + shellcode en 1ere entrée.
+
 Décalage de 9 + addresse du 1er buffer + 7 pour eviter que la chaîne ne se termine (+ de 20 caractères)
 
 ```

